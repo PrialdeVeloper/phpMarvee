@@ -1,4 +1,40 @@
 <?php include('config.php'); ?>
+
+ <?php 
+          	if(isset($_POST['btnEdit']) && isset($_POST['etxtname']) && isset($_POST['etxtcourse']) && isset($_POST['etxtyear']) && isset($_POST['eid']) ){
+          		$id = $_POST['eid'];
+          		$name = $_POST['etxtname'];
+          		$course = $_POST['etxtcourse'];
+          		$year = $_POST['etxtyear'];
+
+          		?>
+          		<script type="text/javascript">
+          			alert(<?php echo $name; ?>);
+          		</script>
+          		<?php
+
+          	 	$sql = "UPDATE student SET StudentName = '$name', StudentCourse = '$course', StudentYear = '$year' where sid = $id";
+          	 	$res = $db->exec($sql);
+
+          	 	if(!$res){
+          	 	?>
+          	 	<script type="text/javascript">
+          	 		alert('Sorry, Cannot Update specified entry. Please try again later');
+          	 	</script>
+          	 	<?php	
+          	 	}
+          	 	else{
+          	 	?>
+          	 	<script type="text/javascript">
+          	 		alert("Successfully Edited");
+          	 		window.location = "student.php";
+          	 	</script>
+          	 	<?php
+          	 	$db = null;
+          	 	}
+          	}
+          ?>
+
 <?php 
 	if(isset($_POST['btnAdd'])){
 		$sname = $_POST['txtname'];
@@ -248,7 +284,8 @@
 		echo "<td>".$year."</td>";
 		echo "<td>";
 		?>
-		<a href="student.php?edit=<?php echo $id; ?>" style="cursor: pointer;" data-toggle="modal" data-target="#myModaledit">Edit</a>
+		
+		<a style="cursor: pointer;" onclick="window.location = 'student.php?edit=<?php echo $id; ?>'">Edit</a>
 		<a style="cursor: pointer;" onclick='confirmfirst(<?php echo $id; ?>);'>Delete</a>
 		<?php
 		echo "</td>";
@@ -259,8 +296,30 @@
 </table>
 	</div>
 
-  
-   <div class="modal fade" id="myModaledit" role="dialog">
+	  <?php
+	  if(isset($_GET['edit'])){
+	  	include('config.php');
+	  	$editid = $_GET['edit'];
+
+	  	$sql = "SELECT * FROM student WHERE sid = $editid";
+	  	$pre = $db->prepare($sql);
+	  	$pre->execute();
+
+	  	while ($row = $pre->fetch(PDO::FETCH_ASSOC)) {
+	  	$id = $row['sid'];
+		$name = $row['StudentName'];
+		$course = $row['StudentCourse'];
+		$year = $row['StudentYear'];
+	  	}
+
+	  	?>
+	  <script type="text/javascript">
+	  	 $(document).ready(function(){
+        $("#myModaledit").modal('show');
+    	});
+	  </script>
+
+	    <div class="modal fade" id="myModaledit" role="dialog">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
@@ -269,17 +328,18 @@
         </div>
         <form method="POST" action="#">
         <div class="modal-body">
+          <input type="hidden" name="eid" value="<?php echo $id; ?>">
           <p>Student Name</p>
-          <input type="text" name="txtname"/>
+          <input type="text" name="etxtname" value="<?php echo $name; ?>" />
           <p>Course</p>
-          <input type="text" name="txtcourse"/>
+          <input type="text" name="etxtcourse" value="<?php echo $course; ?>" />
           <p>Year</p>
-          <input type="number" step="1" min="1" max="5" name="txtyear"/>
+          <input type="number" step="1" min="1" max="5" name="etxtyear" value="<?php echo $year; ?>" />
 
         </div>
         <div class="modal-footer">
           <button type="submit" name="btnEdit" class="btn submit btn-default">Update</button>
-          <button type="button" class="btn btn-default" data-dismiss="modal">Discard</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal" onclick="window.location = 'student.php';">Discard</button>
           </form>
 
         </div>
@@ -287,5 +347,8 @@
       
     </div>
 
+	  <?php
+	  }
+	   ?>
 </body>
 </html>
