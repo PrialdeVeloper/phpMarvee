@@ -100,10 +100,6 @@
 				<?php
 		}
 	}
-
-	if(isset($_POST['btnsearch'])){
-		echo "yes";
-	}
 ?>
 <!DOCTYPE html>
 <html>
@@ -210,7 +206,7 @@
     </div>
      <div class="text-right">
      	<form action="#" method="POST">
-     	<input type="text" class="search" name="search">
+     	<input type="text" class="search" name="search" placeholder="Search for Name">
          <button type="submit" name="btnsearch" class="btn btn-info btn-lg" >Search</button>
          </form>
     </div>
@@ -268,30 +264,62 @@
 				</th>
 			</tr>
 	<?php 
-	$all = "SELECT * FROM student";
-	$dbData = $db->prepare($all);
-	$dbData->execute();
 
-	while($row = $dbData->fetch(PDO::FETCH_ASSOC)){
-		$id = $row['sid'];
-		$name = $row['StudentName'];
-		$course = $row['StudentCourse'];
-		$year = $row['StudentYear'];
-		echo "<tr>";
-		echo "<td>".$id."</td>";
-		echo "<td>".$name."</td>";
-		echo "<td>".$course."</td>";
-		echo "<td>".$year."</td>";
-		echo "<td>";
-		?>
-		
-		<a style="cursor: pointer;" onclick="window.location = 'student.php?edit=<?php echo $id; ?>'">Edit</a>
-		<a style="cursor: pointer;" onclick='confirmfirst(<?php echo $id; ?>);'>Delete</a>
-		<?php
-		echo "</td>";
-		echo "</tr>";
+	if(isset($_POST['search']) && isset($_POST['btnsearch'])){
+		$searchfor = $_POST['search'];
+		$all = "SELECT * FROM student where StudentName LIKE '%$searchfor%'";
+			$dbData = $db->prepare($all);
+			$dbData->execute();
+
+		while($row = $dbData->fetch(PDO::FETCH_ASSOC)){
+			$id = $row['sid'];
+			$name = $row['StudentName'];
+			$course = $row['StudentCourse'];
+			$year = $row['StudentYear'];
+			echo "<tr>";
+			echo "<td>".$id."</td>";
+			echo "<td>".$name."</td>";
+			echo "<td>".$course."</td>";
+			echo "<td>".$year."</td>";
+			echo "<td>";
+			?>
+			
+			<a style="cursor: pointer;" onclick="window.location = 'student.php?edit=<?php echo $id; ?>'">Edit</a>
+			<a style="cursor: pointer;" onclick='confirmfirst(<?php echo $id; ?>);'>Delete</a>
+			<?php
+			echo "</td>";
+			echo "</tr>";
+			}
+			$db = null;
 	}
-	$db = null;
+	else
+		{
+			$all = "SELECT * FROM student";
+			$dbData = $db->prepare($all);
+			$dbData->execute();
+
+		while($row = $dbData->fetch(PDO::FETCH_ASSOC)){
+			$id = $row['sid'];
+			$name = $row['StudentName'];
+			$course = $row['StudentCourse'];
+			$year = $row['StudentYear'];
+			echo "<tr>";
+			echo "<td>".$id."</td>";
+			echo "<td>".$name."</td>";
+			echo "<td>".$course."</td>";
+			echo "<td>".$year."</td>";
+			echo "<td>";
+			?>
+			
+			<a style="cursor: pointer;" onclick="window.location = 'student.php?edit=<?php echo $id; ?>'">Edit</a>
+			<a style="cursor: pointer;" onclick='confirmfirst(<?php echo $id; ?>);'>Delete</a>
+			<?php
+			echo "</td>";
+			echo "</tr>";
+			}
+			$db = null;
+		}
+	
 ?>
 </table>
 	</div>
